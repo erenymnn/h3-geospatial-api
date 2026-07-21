@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="H3 Geospatial Core Service — Interactive API Dashboard with Map Visualization">
+    <title>H3 Geospatial Core — Dashboard</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Leaflet.js -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- App CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="logo-icon">⬡</div>
+                    <div>
+                        <h1>H3 Geospatial</h1>
+                        <div class="subtitle">Core Service Dashboard</div>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav" id="sidebarNav">
+                <!-- Core Group -->
+                <div class="endpoint-group">
+                    <div class="group-header" data-group="core">
+                        <span class="group-dot"></span>
+                        CORE İŞLEMLERİ
+                    </div>
+                    <ul class="group-items">
+                        <li class="endpoint-item" data-endpoint="cell" data-group="core" id="nav-cell">
+                            <span class="method-badge get">GET</span>
+                            <span class="endpoint-name">Hücre Bul (LatLng → Cell)</span>
+                        </li>
+                        <li class="endpoint-item" data-endpoint="parent" data-group="core" id="nav-parent">
+                            <span class="method-badge get">GET</span>
+                            <span class="endpoint-name">Üst Hücre (Parent)</span>
+                        </li>
+                        <li class="endpoint-item" data-endpoint="children" data-group="core" id="nav-children">
+                            <span class="method-badge get">GET</span>
+                            <span class="endpoint-name">Alt Hücreler (Children)</span>
+                        </li>
+                        <li class="endpoint-item" data-endpoint="convert" data-group="core" id="nav-convert">
+                            <span class="method-badge get">GET</span>
+                            <span class="endpoint-name">Çözünürlük Dönüştür</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Geometry Group -->
+                <div class="endpoint-group">
+                    <div class="group-header" data-group="geometry">
+                        <span class="group-dot"></span>
+                        GEOMETRİ İŞLEMLERİ
+                    </div>
+                    <ul class="group-items">
+                        <li class="endpoint-item" data-endpoint="boundary" data-group="geometry" id="nav-boundary">
+                            <span class="method-badge get">GET</span>
+                            <span class="endpoint-name">Hücre Sınırı (Boundary)</span>
+                        </li>
+                        <li class="endpoint-item" data-endpoint="metrics" data-group="geometry" id="nav-metrics">
+                            <span class="method-badge get">GET</span>
+                            <span class="endpoint-name">Hücre Metrikleri</span>
+                        </li>
+                        <li class="endpoint-item" data-endpoint="fillPolygon" data-group="geometry" id="nav-fillPolygon">
+                            <span class="method-badge post">POST</span>
+                            <span class="endpoint-name">Poligon Doldur</span>
+                        </li>
+                        <li class="endpoint-item" data-endpoint="fillBbox" data-group="geometry" id="nav-fillBbox">
+                            <span class="method-badge post">POST</span>
+                            <span class="endpoint-name">BBox Doldur</span>
+                        </li>
+                        <li class="endpoint-item" data-endpoint="fillCircle" data-group="geometry" id="nav-fillCircle">
+                            <span class="method-badge post">POST</span>
+                            <span class="endpoint-name">Daire Doldur</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Spatial Group -->
+                <div class="endpoint-group">
+                    <div class="group-header" data-group="spatial">
+                        <span class="group-dot"></span>
+                        MEKANSAL İŞLEMLER
+                    </div>
+                    <ul class="group-items">
+                        <li class="endpoint-item" data-endpoint="neighbors" data-group="spatial" id="nav-neighbors">
+                            <span class="method-badge get">GET</span>
+                            <span class="endpoint-name">Komşular (Neighbors)</span>
+                        </li>
+                        <li class="endpoint-item" data-endpoint="kring" data-group="spatial" id="nav-kring">
+                            <span class="method-badge get">GET</span>
+                            <span class="endpoint-name">K-Ring Halkası</span>
+                        </li>
+                        <li class="endpoint-item" data-endpoint="distance" data-group="spatial" id="nav-distance">
+                            <span class="method-badge post">POST</span>
+                            <span class="endpoint-name">Grid Mesafesi</span>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="top-bar-left">
+                    <span class="current-endpoint-title" id="topBarTitle">Dashboard</span>
+                    <span class="current-endpoint-path" id="topBarPath">/api/h3</span>
+                </div>
+                <div class="top-bar-right">
+                    <div class="status-indicator">
+                        <span class="status-dot"></span>
+                        <span>API Aktif</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area" id="contentArea">
+                <!-- Welcome Screen (default) -->
+                <div class="welcome-screen" id="welcomeScreen">
+                    <div class="welcome-hex">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="hexGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.8" />
+                                    <stop offset="50%" style="stop-color:#10b981;stop-opacity:0.6" />
+                                    <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:0.8" />
+                                </linearGradient>
+                            </defs>
+                            <polygon points="50,3 93,25 93,75 50,97 7,75 7,25"
+                                     fill="none" stroke="url(#hexGrad)" stroke-width="2"/>
+                            <polygon points="50,15 82,32 82,68 50,85 18,68 18,32"
+                                     fill="url(#hexGrad)" opacity="0.15"/>
+                            <text x="50" y="55" text-anchor="middle" fill="url(#hexGrad)"
+                                  font-family="Inter" font-size="22" font-weight="700">H3</text>
+                        </svg>
+                    </div>
+                    <h2 class="welcome-title">H3 Geospatial Dashboard</h2>
+                    <p class="welcome-desc">
+                        Soldaki menüden bir endpoint seçerek H3 hücre işlemlerini başlatın.
+                        Sonuçlar harita üzerinde görselleştirilecek.
+                    </p>
+                    <div class="welcome-features">
+                        <div class="welcome-feature animate-in animate-delay-1">
+                            <span class="feat-count">4</span>
+                            <span class="feat-label">Core</span>
+                        </div>
+                        <div class="welcome-feature animate-in animate-delay-2">
+                            <span class="feat-count">5</span>
+                            <span class="feat-label">Geometry</span>
+                        </div>
+                        <div class="welcome-feature animate-in animate-delay-3">
+                            <span class="feat-count">3</span>
+                            <span class="feat-label">Spatial</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Panel (hidden initially) -->
+                <div class="glass-card form-panel animate-in" id="formPanel" style="display:none;">
+                    <div class="card-header">
+                        <h3><span class="icon">📝</span> <span id="formTitle">İstek Formu</span></h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="apiForm" autocomplete="off">
+                            <div id="formFields"></div>
+                            <button type="submit" class="btn-submit" id="btnSubmit">
+                                <span class="spinner"></span>
+                                <span class="btn-text">🚀 İstek Gönder</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Map Panel (hidden initially) -->
+                <div class="glass-card map-panel animate-in animate-delay-1" id="mapPanel" style="display:none;">
+                    <div class="card-header">
+                        <h3><span class="icon">🗺️</span> Harita Görünümü</h3>
+                        <button class="btn-clear-map" id="btnClearMap" title="Haritayı temizle">🗑 Temizle</button>
+                    </div>
+                    <div class="card-body">
+                        <div id="map"></div>
+                    </div>
+                </div>
+
+                <!-- Response Panel (hidden initially) -->
+                <div class="glass-card response-panel animate-in animate-delay-2" id="responsePanel" style="display:none;">
+                    <div class="card-header">
+                        <h3><span class="icon">📋</span> API Yanıtı</h3>
+                        <div class="card-header-right">
+                            <span class="response-status" id="responseStatus" style="display:none;"></span>
+                            <span class="response-time" id="responseTime"></span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="response-content" id="responseContent">
+                            <div class="empty-state">
+                                <div class="empty-icon">📡</div>
+                                <div class="empty-title">Henüz yanıt yok</div>
+                                <div class="empty-desc">Formu doldurup istek gönderin, yanıt burada görüntülenecek.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- App JS -->
+    <script src="/js/app.js"></script>
+</body>
+</html>
