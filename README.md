@@ -1,4 +1,4 @@
-# H3 Geospatial Core Service ⬢
+# H3 Geospatial APİ ⬢
 
 <p>
   <img src="https://img.shields.io/badge/Java-21-orange?style=flat-square&logo=openjdk" alt="Java 21">
