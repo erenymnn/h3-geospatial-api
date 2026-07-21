@@ -34,6 +34,7 @@ Instead of feeding complex polygons directly into the database, this service:
 *   **Java 21** (Utilizing Records for immutable DTOs)
 *   **Spring Boot 3.x** (REST Architecture)
 *   **Uber H3 Core Library** (v4.x)
+*   **HTML / CSS / JavaScript** (Interactive Frontend & Visualization)
 *   **Maven** (Dependency Management)
 
 ## 🌟 Key Features
